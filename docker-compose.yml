@@ -1,0 +1,42 @@
+services:
+  despachos-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: despachos-api
+    ports:
+      - "8081:8081"
+    environment:
+      DB_ENDPOINT: despachos-db
+      DB_PORT: 3306
+      DB_NAME: despachos_db
+      DB_USERNAME: despachos_user
+      DB_PASSWORD: despachos_pass
+    depends_on:
+      - despachos-db
+    networks:
+      - despachos-network
+    restart: unless-stopped
+
+  despachos-db:
+    image: mysql:8.0
+    container_name: despachos-db
+    environment:
+      MYSQL_DATABASE: despachos_db
+      MYSQL_USER: despachos_user
+      MYSQL_PASSWORD: despachos_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    ports:
+      - "3308:3306"
+    volumes:
+      - despachos_db_data:/var/lib/mysql
+    networks:
+      - despachos-network
+    restart: unless-stopped
+
+volumes:
+  despachos_db_data:
+
+networks:
+  despachos-network:
+    driver: bridge
